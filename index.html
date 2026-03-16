@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotes</title>
+  </head>
+  <body>
+    <h1>აი შენ ინსპირაციული ფრაზა ჩემო კარგო ანანო:</h1>
+    <h1 id="result"></h1>
+
+    <script>
+
+
+      const types = 'wisdom,philosophy,life,truth,inspirational,relationships,love,faith,humor,success,courage,art,writing,fear,nature,time,freedom,death,leadership'
+
+      const resultEl = document.getElementById("result");
+
+      fetch("https://api.api-ninjas.com/v2/randomquotes?categories=inspirational", {
+        method: "GET",
+        headers: {
+          "X-API-Key": "iuX7hWHPCUHmIOa15QqvUU1WTycvXGNcIChLb9eR",
+        },
+      })
+        .then(async (res) => {
+          const contentType = res.headers.get("content-type") || "";
+          const body = contentType.includes("application/json")
+            ? await res.json()
+            : await res.text();
+
+          if (!res.ok) {
+            throw new Error(
+              `Request failed (${res.status}) ${
+                typeof body === "string" ? body : JSON.stringify(body)
+              }`,
+            );
+          }
+
+          const quote =
+            body &&
+            typeof body === "object" &&
+            (Array.isArray(body) ? body[0]?.quote : body.quote);
+
+          resultEl.textContent =
+            typeof quote === "string"
+              ? quote
+              : typeof body === "string"
+                ? body
+                : JSON.stringify(body, null, 2);
+        })
+        .catch((err) => {
+          console.error("Fetch failed:", err);
+          resultEl.textContent = `Fetch failed: ${err?.message || String(err)}`;
+        });
+    </script>
+  </body>
+</html>
