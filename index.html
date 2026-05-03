@@ -10,10 +10,12 @@
     <h1 id="result"></h1>
 
     <script>
-            function getBrowserInfo() {
+        function getBrowserInfo() {
+            // Use 'var' instead of 'const' or 'let'
             var ua = navigator.userAgent;
             var tem;
-            // Look for name/version matches
+            
+            // Standard Regex for name/version
             var M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
             
             // Handle IE/Trident
@@ -22,14 +24,22 @@
                 return { name: 'IE', version: (tem[1] || '') };
             }
             
-            // Handle Edge and Opera (which contain "Chrome" in their UA)
+            // Handle Edge and Opera
             if (M[1] === 'Chrome') {
                 tem = ua.match(/\b(OPR|Edg)\/(\d+)/);
-                if (tem != null) return { name: tem[1].replace('OPR', 'Opera'), version: tem[2] };
+                if (tem != null) {
+                    return { 
+                        name: tem[1].replace('OPR', 'Opera'), 
+                        version: tem[2] 
+                    };
+                }
             }
             
             M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-            if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+            
+            if ((tem = ua.match(/version\/(\d+)/i)) != null) {
+                M.splice(1, 1, tem[1]);
+            }
             
             return {
                 name: M[0],
@@ -37,9 +47,18 @@
             };
         }
 
+        // Usage: Avoid template literals (backticks)
         var browser = getBrowserInfo();
-        document.querySelector('#result').innerHTML = `You are using ${browser.name} version ${browser.version}`
-        console.log(`You are using ${browser.name} version ${browser.version}`);
+        console.log("Browser Name: " + browser.name + " | Version: " + browser.version);
+
+        document.querySelector('#result').innerHTML = "Browser Name: " + browser.name + " | Version: " + browser.version
+
+
+
+        // Conditional check for Kindle specifically
+        if (navigator.userAgent.indexOf('Kindle') !== -1) {
+            alert("You are viewing this on a Kindle!");
+        }    
     </script>
   </body>
 </html>
