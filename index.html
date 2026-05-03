@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=600">
   <style>
     table {
       font-size: 18px;
@@ -22,7 +23,7 @@
 
 
 <body>
-  <h1>ხვალ:</h1>
+  <h1>ამინდი ხვალ, ზეგ და მაზეგ პატალა კუნასთვის.</h1>
   <div id="weather-box">Loading tomorrow's weather...</div>
 
   <script>
@@ -48,28 +49,30 @@
 
     function displayThreeDayForecast(data) {
       var forecastList = data.list;
-      var html = '<table border="1" style="width:100%; border-collapse: collapse; font-family: sans-serif;">';
-      html += '<tr><th>Day</th><th>Temp</th><th>Wind</th><th>Pres</th><th>Hum</th></tr>';
+      var html = '<table border="1" style="width:100%; border-collapse: collapse; font-family: Arial, sans-serif;">';
+      html += '<tr style="background-color: #cccccc;"><th>დღე</th><th>გრადუსი</th><th>ქარი</th><th>წნევა</th><th>ტენი</th></tr>';
 
-      // We want to find a forecast around midday (12:00:00) for the next 3 days
       var daysFound = 0;
 
       for (var i = 0; i < forecastList.length; i++) {
         var item = forecastList[i];
-        var timeStr = item.dt_txt; // Format is "YYYY-MM-DD HH:MM:SS"
+        var timeStr = item.dt_txt;
 
-        // We look for the 12:00:00 mark to get a consistent "mid-day" reading
-        // and we skip the very first entry if it's for "today"
+        // Target 12:00:00 for a consistent daily snapshot
         if (timeStr.indexOf("12:00:00") !== -1 && daysFound < 3) {
-          var date = timeStr.split(" ")[0].substring(5); // Get MM-DD
-          var temp = Math.round(item.main.temp) + "C";
-          var wind = item.wind.speed + "m/s";
-          var pressure = item.main.pressure + "hPa";
-          var humidity = item.main.humidity + "%";
+          // Split "2026-05-04" into ["2026", "05", "04"]
+          var dateParts = timeStr.split(" ")[0].split("-");
+          // Rearrange to European Format: DD/MM
+          var euroDate = dateParts[2] + "/" + dateParts[1];
+
+          var temp = Math.round(item.main.temp) + " °C";
+          var wind = Math.round(item.wind.speed) + " m/s";
+          var pressure = item.main.pressure + " hPa";
+          var humidity = item.main.humidity + " %";
           var desc = item.weather[0].main;
 
           html += '<tr style="text-align: center;">';
-          html += '<td>' + date + '<br><small>' + desc + '</small></td>';
+          html += '<td style="padding: 10px;"><strong>' + euroDate + '</strong><br><small>' + desc + '</small></td>';
           html += '<td>' + temp + '</td>';
           html += '<td>' + wind + '</td>';
           html += '<td>' + pressure + '</td>';
