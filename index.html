@@ -39,7 +39,7 @@
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           var data = JSON.parse(xhr.responseText);
-          findTomorrowWeather(data);
+          displayThreeDayForecast(data);
         } else {
           console.log("Error fetching weather: " + xhr.status);
         }
