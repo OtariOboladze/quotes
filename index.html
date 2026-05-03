@@ -11,10 +11,10 @@
 
     <script>
             function getBrowserInfo() {
-            const ua = navigator.userAgent;
-            let tem;
+            var ua = navigator.userAgent;
+            var tem;
             // Look for name/version matches
-            let M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+            var M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
             
             // Handle IE/Trident
             if (/trident/i.test(M[1])) {
@@ -37,7 +37,7 @@
             };
         }
 
-        const browser = getBrowserInfo();
+        var browser = getBrowserInfo();
         document.querySelector('#result').innerHTML = `You are using ${browser.name} version ${browser.version}`
         console.log(`You are using ${browser.name} version ${browser.version}`);
     </script>
