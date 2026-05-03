@@ -1,60 +1,92 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quotes</title>
-  </head>
-  <body>
-    <h1>აო:</h1>
-    <h1 id="result"></h1>
-    <div id="weather-box">Loading tomorrow's weather...</div>
 
-    <script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    table {
+      font-size: 18px;
+    }
 
+    th {
+      background-color: #eee;
+      color: #000;
+    }
 
-          var apiKey = "1a5e3322cfe07ebbea2e0612d761753d";
-          var city = "Barcelona"; // or your city
-          var url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey + "&units=metric";
-
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", url, true);
-
-          xhr.onreadystatechange = function() {
-              if (xhr.readyState === 4) {
-                  if (xhr.status === 200) {
-                      var data = JSON.parse(xhr.responseText);
-                      findTomorrowWeather(data);
-                  } else {
-                      console.log("Error fetching weather: " + xhr.status);
-                  }
-              }
-          };
-
-          function findTomorrowWeather(data) {
-              // Get the timestamp for 24 hours from now
-              var tomorrowTs = Math.floor(new Date().getTime() / 1000) + (24 * 60 * 60);
-              var forecast = data.list[0]; // Fallback to first available
-
-              // Find the entry closest to 24 hours from now
-              for (var i = 0; i < data.list.length; i++) {
-                  if (data.list[i].dt >= tomorrowTs) {
-                      forecast = data.list[i];
-                      break;
-                  }
-              }
-
-              var temp = forecast.main.temp;
-              var desc = forecast.weather[0].description;
-              
-              // Display on the Kindle screen
-              var output = "Tomorrow: " + temp + "°C, " + desc;
-              document.getElementById("weather-box").innerHTML = output;
-          }
-
-          xhr.send();
+    td {
+      padding: 8px;
+    }
+  </style>
+</head>
 
 
-</script>
-  </body>
+<body>
+  <h1>ხვალ:</h1>
+  <div id="weather-box">Loading tomorrow's weather...</div>
+
+  <script>
+
+
+    var apiKey = "1a5e3322cfe07ebbea2e0612d761753d";
+    var city = "Barcelona"; // or your city
+    var url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey + "&units=metric";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          findTomorrowWeather(data);
+        } else {
+          console.log("Error fetching weather: " + xhr.status);
+        }
+      }
+    };
+
+    function displayThreeDayForecast(data) {
+      var forecastList = data.list;
+      var html = '<table border="1" style="width:100%; border-collapse: collapse; font-family: sans-serif;">';
+      html += '<tr><th>Day</th><th>Temp</th><th>Wind</th><th>Pres</th><th>Hum</th></tr>';
+
+      // We want to find a forecast around midday (12:00:00) for the next 3 days
+      var daysFound = 0;
+
+      for (var i = 0; i < forecastList.length; i++) {
+        var item = forecastList[i];
+        var timeStr = item.dt_txt; // Format is "YYYY-MM-DD HH:MM:SS"
+
+        // We look for the 12:00:00 mark to get a consistent "mid-day" reading
+        // and we skip the very first entry if it's for "today"
+        if (timeStr.indexOf("12:00:00") !== -1 && daysFound < 3) {
+          var date = timeStr.split(" ")[0].substring(5); // Get MM-DD
+          var temp = Math.round(item.main.temp) + "C";
+          var wind = item.wind.speed + "m/s";
+          var pressure = item.main.pressure + "hPa";
+          var humidity = item.main.humidity + "%";
+          var desc = item.weather[0].main;
+
+          html += '<tr style="text-align: center;">';
+          html += '<td>' + date + '<br><small>' + desc + '</small></td>';
+          html += '<td>' + temp + '</td>';
+          html += '<td>' + wind + '</td>';
+          html += '<td>' + pressure + '</td>';
+          html += '<td>' + humidity + '</td>';
+          html += '</tr>';
+
+          daysFound++;
+        }
+      }
+
+      html += '</table>';
+      document.getElementById("weather-box").innerHTML = html;
+    }
+
+    xhr.send();
+
+  </script>
+</body>
+
 </html>
